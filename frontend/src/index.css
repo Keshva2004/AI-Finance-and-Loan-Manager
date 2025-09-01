@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+body{
+  background-color: white;
+}
+
+.navButton{
+  background-color: #2563EB !important;
+ text-transform:capitalize !important;
+ font-size:large !important;
+ font-weight: 500 !important;
+}
