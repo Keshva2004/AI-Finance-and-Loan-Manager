@@ -157,7 +157,7 @@ export default function Clients() {
   // ✅ Handle Document Status Click (Navigate to Dashboard Documents Page)
   const handleDocumentStatusClick = (client) => {
     const docCount = client.documentCount || 0;
-    if (docCount < 10) {
+    if (docCount < 4) {
       // Only navigate if not fully approved
       navigate(`/dashboard/documents?clientId=${client._id}`); // Updated route
     }
@@ -207,11 +207,11 @@ export default function Clients() {
         let bgColor = "#FF8C00"; // Orange for pending
         let hoverColor = "#E67600";
 
-        if (docCount > 0 && docCount < 10) {
+        if (docCount > 0 && docCount < 4) {
           statusText = `${docCount} documents uploaded`;
           bgColor = "#1976d2"; // Blue for partial
           hoverColor = "#1565c0";
-        } else if (docCount >= 10) {
+        } else if (docCount >= 4) {
           statusText = "Approved";
           isClickable = false;
           bgColor = "#2e7d32"; // Green for approved

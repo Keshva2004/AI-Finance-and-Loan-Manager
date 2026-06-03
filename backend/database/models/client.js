@@ -83,7 +83,7 @@ clientSchema.virtual("documentCount").get(function () {
 });
 clientSchema.virtual("documentStatus").get(function () {
   const count = this.documentCount;
-  if (count >= 10) return "Approved";
+  if (count >= 4) return "Approved";
   return "Pending";
 });
 

@@ -1,25 +1,25 @@
 import * as React from "react";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import { createTheme } from "@mui/material/styles";
-import { Outlet, useLocation, Link } from "react-router-dom"; // Keep Link for custom nav rendering if you decide to keep it in the future
+import { Outlet } from "react-router-dom";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 
-// MUI Components and Icons
+// MUI Icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import PaymentIcon from "@mui/icons-material/Payment";
-import DescriptionIcon from "@mui/icons-material/Description";
-import PersonIcon from "@mui/icons-material/Person"; // For profile icon
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import CalculateIcon from "@mui/icons-material/Calculate";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import DescriptionIcon from "@mui/icons-material/Description";
+import PersonIcon from "@mui/icons-material/Person";
 
-// Toolpad imports
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { DemoProvider } from "@toolpad/core/internal";
 
-// Local imports
 import logo from "../assets/MainLogo.jpg";
 
 const NAVIGATION = [
@@ -53,20 +53,18 @@ const NAVIGATION = [
   { segment: "dashboard/profile", title: "Profile", icon: <PersonIcon /> },
 ];
 
-// 1. Modified to be a static "light" theme creator
-const getCustomTheme = () =>
+// Dynamic theme depending on mode
+const getCustomTheme = (mode) =>
   createTheme({
-    cssVariables: { colorSchemeSelector: "data-toolpad-color-scheme" },
-    colorSchemes: { light: true, dark: true },
     palette: {
-      mode: "light", // Fixed mode to 'light'
+      mode,
       primary: { main: "#1976d2" },
       background: {
-        default: "#f5f7fa",
-        paper: "#ffffff",
+        default: mode === "light" ? "#f5f7fa" : "#121212",
+        paper: mode === "light" ? "#fff" : "#1e1e1e",
       },
       text: {
-        primary: "#000000",
+        primary: mode === "light" ? "#000" : "#fff",
       },
     },
     components: {
@@ -77,7 +75,10 @@ const getCustomTheme = () =>
             margin: "4px 8px",
             transition: "all 0.2s ease",
             "&:hover": {
-              backgroundColor: "rgba(25, 118, 210, 0.08)", // Light mode hover
+              backgroundColor:
+                mode === "light"
+                  ? "rgba(25, 118, 210, 0.08)"
+                  : "rgba(144, 202, 249, 0.2)", // lighter blue hover in dark mode
               transform: "scale(1.02)",
             },
           },
@@ -95,55 +96,55 @@ const getCustomTheme = () =>
   });
 
 function DashboardContent({ window }) {
-  // 2. Remove session state - NO LONGER NEEDED as we remove the profile icon
-  // const [session, setSession] = React.useState({...});
+  const [mode, setMode] = React.useState("light"); // Enable dark/light mode toggle
+  const toggleMode = () =>
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
 
-  // 3. Remove mode state - NO LONGER NEEDED
-  // const [mode, setMode] = React.useState("light");
-
-  // Authentication is now null/undefined to remove user icon
   const authentication = React.useMemo(() => undefined, []);
-
   const demoWindow = typeof window !== "undefined" ? window : undefined;
-  // const location = useLocation(); // Not needed if we use Toolpad's default navigation
 
-  // 4. Use a fixed 'light' theme
-  const theme = React.useMemo(() => getCustomTheme(), []);
+  const theme = React.useMemo(() => getCustomTheme(mode), [mode]);
 
-  // 5. Remove the custom renderNavigation function entirely.
-  //    By deleting this, we rely on DashboardLayout's internal navigation rendering,
-  //    and we also delete the dark/light mode toggle logic that was inside it.
+  // Add toggle button to Sidebar or Header
+  // Using DashboardLayout slots to add custom element to header (if supported)
+  // If DashboardLayout does not support slots/header, consider placing toggle inside Box here or a custom header component
 
   return (
     <DemoProvider window={demoWindow}>
       <AppProvider
-        // 6. Set session to null or omit to remove the top-right profile icon
-        session={null}
-        authentication={authentication} // This is now undefined/null
-        theme={theme}
-        window={demoWindow}
-        navigation={NAVIGATION}
-        branding={{
-          logo: (
-            <img
-              src={logo}
-              alt="Main Logo"
-              style={{
-                height: 42,
-                borderRadius: 8,
-                marginRight: 8,
-                objectFit: "contain",
-              }}
-            />
-          ),
-          title: "",
+  session={null}
+  authentication={authentication}
+  theme={theme}
+  window={demoWindow}
+  navigation={NAVIGATION}
+  branding={{
+    logo: (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          height: 42,          // fixed height container to match logo height
+          padding: '0 12px',   // fixed horizontal padding, same for both modes
+          borderRadius: 8,
+          boxSizing: 'border-box',
+          userSelect: 'none',
         }}
       >
-        <DashboardLayout
-        // 7. Remove the 'slots' prop to use the default sidebar rendering
-        // slots={{ sidebar: renderNavigation }}
-        >
-          {/* Main Content Area Styling - adjust as needed for light mode */}
+        <img
+          src={logo}
+          alt="Main Logo"
+          style={{
+            height: '100%',     // fill container height exactly
+            objectFit: 'contain',
+          }}
+        />
+      </div>
+    ),
+    title: "",
+  }}
+>
+
+        <DashboardLayout>
           <Box
             sx={{
               py: 4,
@@ -151,11 +152,24 @@ function DashboardContent({ window }) {
               borderRadius: 3,
               backgroundColor: theme.palette.background.paper,
               color: theme.palette.text.primary,
-              // Fixed light mode box-shadow
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              boxShadow:
+                mode === "light"
+                  ? "0 2px 8px rgba(0,0,0,0.05)"
+                  : "0 2px 8px rgba(0,0,0,0.7)",
               minHeight: "85vh",
+              position: "relative",
             }}
           >
+            {/* Dark/light mode toggle button top right */}
+            <IconButton
+              onClick={toggleMode}
+              color="inherit"
+              sx={{ position: "absolute", top: 16, right: 16 }}
+              aria-label="Toggle light/dark mode"
+            >
+              {mode === "light" ? <Brightness4Icon /> : <Brightness7Icon />}
+            </IconButton>
+
             <Outlet />
           </Box>
         </DashboardLayout>
@@ -164,12 +178,16 @@ function DashboardContent({ window }) {
   );
 }
 
-DashboardContent.propTypes = { window: PropTypes.func };
+DashboardContent.propTypes = {
+  window: PropTypes.func,
+};
 
 function DashboardLayoutAccount(props) {
   return <DashboardContent {...props} />;
 }
 
-DashboardLayoutAccount.propTypes = { window: PropTypes.func };
+DashboardLayoutAccount.propTypes = {
+  window: PropTypes.func,
+};
 
 export default DashboardLayoutAccount;

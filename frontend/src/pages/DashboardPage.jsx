@@ -6,6 +6,7 @@ import {
   Typography,
   CircularProgress,
   Avatar,
+  useTheme,
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -22,7 +23,7 @@ import {
   LinearScale,
   Tooltip,
   Legend,
-  Title, // Added for chart titles
+  Title,
 } from "chart.js";
 import axios from "axios";
 
@@ -35,7 +36,7 @@ Chart.register(
   LinearScale,
   Tooltip,
   Legend,
-  Title // Registered for titles
+  Title
 );
 
 const teal = "#00bfa5";
@@ -43,6 +44,7 @@ const blue = "#2962ff";
 const purple = "#aa00ff";
 
 export default function Dashboard() {
+  const theme = useTheme();
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState(null);
 
@@ -70,7 +72,8 @@ export default function Dashboard() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          bgcolor: "#f0f2f5",
+          bgcolor: theme.palette.background.default,
+          color: theme.palette.text.primary,
         }}
       >
         <CircularProgress size={60} />
@@ -84,27 +87,68 @@ export default function Dashboard() {
       </Typography>
     );
 
-  // Chart data and options
-  const pieData = {
-    labels: summary.loanStatusCounts.map((s) => s._id || "Unknown"),
-    datasets: [
-      {
-        data: summary.loanStatusCounts.map((s) => s.count),
-        backgroundColor: [teal, blue, purple],
-        hoverOffset: 20,
+  // Chart data and options with dynamic colors based on theme
+  const commonOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        labels: {
+          color: theme.palette.text.primary,
+          font: { size: 12 },
+        },
       },
-    ],
+      tooltip: { enabled: true, mode: "index", intersect: false },
+      title: {
+        display: true,
+        font: { size: 14, weight: "bold" },
+        color: theme.palette.text.primary,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: theme.palette.text.primary,
+          font: { size: 13 },
+        },
+        grid: { color: theme.palette.divider },
+      },
+      x: {
+        ticks: {
+          color: theme.palette.text.primary,
+          font: { size: 13 },
+        },
+        grid: { color: theme.palette.divider },
+      },
+    },
+    maintainAspectRatio: false,
   };
 
-  const doughnutData = {
-    labels: summary.loanStatusCounts.map((s) => s._id || "Unknown"),
-    datasets: [
-      {
-        data: summary.loanStatusCounts.map((s) => s.count),
-        backgroundColor: [purple, teal, blue],
-        hoverOffset: 20,
+  const pieOptions = {
+    ...commonOptions,
+    plugins: {
+      ...commonOptions.plugins,
+      legend: {
+        ...commonOptions.plugins.legend,
+        position: "bottom",
       },
-    ],
+      title: {
+        ...commonOptions.plugins.title,
+        text: "Loan Status Distribution",
+        font: { size: 12, weight: "bold" },
+      },
+    },
+  };
+
+  const doughnutOptions = {
+    ...pieOptions,
+    plugins: {
+      ...pieOptions.plugins,
+      title: {
+        ...pieOptions.plugins.title,
+        text: "Loan Status Breakdown",
+      },
+    },
   };
 
   const lineData = {
@@ -159,7 +203,28 @@ export default function Dashboard() {
     ],
   };
 
-  // Stat card component for clarity
+  const pieData = {
+    labels: summary.loanStatusCounts.map((s) => s._id || "Unknown"),
+    datasets: [
+      {
+        data: summary.loanStatusCounts.map((s) => s.count),
+        backgroundColor: [teal, blue, purple],
+        hoverOffset: 20,
+      },
+    ],
+  };
+
+  const doughnutData = {
+    labels: summary.loanStatusCounts.map((s) => s._id || "Unknown"),
+    datasets: [
+      {
+        data: summary.loanStatusCounts.map((s) => s.count),
+        backgroundColor: [purple, teal, blue],
+        hoverOffset: 20,
+      },
+    ],
+  };
+
   const StatCard = ({
     icon,
     value,
@@ -176,9 +241,9 @@ export default function Dashboard() {
         alignItems: "center",
         gap: 2,
         borderRadius: 2,
-        bgcolor: "#ffffff",
+        bgcolor: theme.palette.background.paper,
         minWidth: 250,
-        boxShadow: "0px 2px 8px rgba(0,0,0,0.05)",
+        boxShadow: theme.shadows[1],
       }}
     >
       <Avatar
@@ -193,7 +258,7 @@ export default function Dashboard() {
         {icon}
       </Avatar>
       <Box sx={{ flexGrow: 1, textAlign }}>
-        <Typography variant="h5" fontWeight={700} color="text.primary">
+        <Typography variant="h5" fontWeight={700} color="text.primary" noWrap>
           {currency ? `₹${value.toLocaleString()}` : value}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -204,14 +269,21 @@ export default function Dashboard() {
   );
 
   return (
-    <Box sx={{ p: 3, bgcolor: "#f0f2f5", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: 3,
+        bgcolor: theme.palette.background.default,
+        minHeight: "100vh",
+        transition: "background-color 0.3s ease",
+      }}
+    >
       <Grid container spacing={3} mb={3}>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={<PeopleIcon />}
             value={summary.totalClients}
             label="Clients"
-            iconBgColor="#6a1b9a" // Darker purple for more interactive feel
+            iconBgColor="#6a1b9a" // You can also adapt by mode if you like
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -219,7 +291,7 @@ export default function Dashboard() {
             icon={<AccountBalanceWalletIcon />}
             value={summary.totalLoans}
             label="Loan Accounts"
-            iconBgColor="#1565c0" // Darker blue for more interactive feel
+            iconBgColor="#1565c0"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -227,7 +299,7 @@ export default function Dashboard() {
             icon={<PaidIcon />}
             value={summary.totalLoanAmount}
             label="Loan Distributed"
-            iconBgColor="#f57c00" // Darker orange/yellow for more interactive feel
+            iconBgColor="#f57c00"
             currency
             textAlign="right"
           />
@@ -237,7 +309,7 @@ export default function Dashboard() {
             icon={<MonetizationOnIcon />}
             value={summary.totalLoanCollected}
             label="Loan Collected"
-            iconBgColor="#c62828" // Darker red for more interactive feel
+            iconBgColor="#c62828"
             currency
             textAlign="right"
           />
@@ -250,35 +322,23 @@ export default function Dashboard() {
             sx={{
               p: 3,
               borderRadius: 2,
-              boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
+              boxShadow: theme.shadows[3],
               height: 320,
-              bgcolor: "white",
+              bgcolor: theme.palette.background.paper,
+              transition: "background-color 0.3s ease",
             }}
           >
             <Line
               height={280}
               data={lineData}
               options={{
-                responsive: true,
+                ...commonOptions,
                 plugins: {
+                  ...commonOptions.plugins,
                   title: {
+                    ...commonOptions.plugins.title,
                     display: true,
-                    text: "Loan Trends Over Time (PV and UV Metrics)", // Added informative title
-                    font: { size: 16, weight: "bold" },
-                    color: "#333",
-                  },
-                  legend: { labels: { color: "#555", font: { size: 14 } } },
-                  tooltip: { mode: "index", intersect: false },
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    ticks: { color: "#666", font: { size: 13 } },
-                    grid: { color: "#eee" },
-                  },
-                  x: {
-                    ticks: { color: "#666", font: { size: 13 } },
-                    grid: { color: "#eee" },
+                    text: "Loan Trends Over Time (PV and UV Metrics)",
                   },
                 },
               }}
@@ -292,39 +352,13 @@ export default function Dashboard() {
               sx={{
                 p: 2,
                 borderRadius: 2,
-                boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
+                boxShadow: theme.shadows[3],
                 height: "100%",
-                bgcolor: "white",
+                bgcolor: theme.palette.background.paper,
+                transition: "background-color 0.3s ease",
               }}
             >
-              <Bar
-                data={barData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    title: {
-                      display: true,
-                      text: "Comparison of PV and UV Values", // Added informative title
-                      font: { size: 14, weight: "bold" },
-                      color: "#333",
-                    },
-                    legend: { display: false },
-                    tooltip: { enabled: true },
-                  },
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                      ticks: { font: { size: 13 }, color: "#666" },
-                      grid: { color: "#eee" },
-                    },
-                    x: {
-                      ticks: { font: { size: 13 }, color: "#666" },
-                      grid: { color: "#eee" },
-                    },
-                  },
-                  maintainAspectRatio: false,
-                }}
-              />
+              <Bar data={barData} options={commonOptions} />
             </Paper>
           </Grid>
 
@@ -334,30 +368,13 @@ export default function Dashboard() {
                 sx={{
                   p: 1,
                   borderRadius: 2,
-                  boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
+                  boxShadow: theme.shadows[3],
                   height: "100%",
-                  bgcolor: "white",
+                  bgcolor: theme.palette.background.paper,
+                  transition: "background-color 0.3s ease",
                 }}
               >
-                <Pie
-                  data={pieData}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      title: {
-                        display: true,
-                        text: "Loan Status Distribution", // Added informative title
-                        font: { size: 12, weight: "bold" },
-                        color: "#333",
-                      },
-                      legend: {
-                        position: "bottom",
-                        labels: { font: { size: 12 }, color: "#555" },
-                      },
-                    },
-                    maintainAspectRatio: false,
-                  }}
-                />
+                <Pie data={pieData} options={pieOptions} />
               </Paper>
             </Grid>
             <Grid item xs={6}>
@@ -365,30 +382,13 @@ export default function Dashboard() {
                 sx={{
                   p: 1,
                   borderRadius: 2,
-                  boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
+                  boxShadow: theme.shadows[3],
                   height: "100%",
-                  bgcolor: "white",
+                  bgcolor: theme.palette.background.paper,
+                  transition: "background-color 0.3s ease",
                 }}
               >
-                <Doughnut
-                  data={doughnutData}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      title: {
-                        display: true,
-                        text: "Loan Status Breakdown", // Added informative title
-                        font: { size: 12, weight: "bold" },
-                        color: "#333",
-                      },
-                      legend: {
-                        position: "bottom",
-                        labels: { font: { size: 12 }, color: "#555" },
-                      },
-                    },
-                    maintainAspectRatio: false,
-                  }}
-                />
+                <Doughnut data={doughnutData} options={doughnutOptions} />
               </Paper>
             </Grid>
           </Grid>

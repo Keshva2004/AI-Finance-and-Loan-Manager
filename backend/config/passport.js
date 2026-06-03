@@ -1,4 +1,3 @@
-
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import Admin from "../database/models/admin.js";

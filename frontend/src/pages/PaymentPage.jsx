@@ -29,9 +29,6 @@ export default function PaymentsPage() {
   const [openAdd, setOpenAdd] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-  const [listening, setListening] = useState(false);
-  const [voiceCommand, setVoiceCommand] = useState("");
 
   // ✅ Fetch Payments
   const fetchPayments = async () => {
@@ -123,55 +120,6 @@ export default function PaymentsPage() {
       type: "application/octet-stream",
     });
     saveAs(fileBlob, "PaymentsData.xlsx");
-  };
-
-  // ✅ Voice Command Handler
-  const handleVoiceCommand = () => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech Recognition not supported in this browser");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-    recognition.continuous = false;
-
-    recognition.onstart = () => setListening(true);
-    recognition.onend = () => setListening(false);
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setVoiceCommand(transcript);
-      sendToBackend(transcript);
-    };
-
-    recognition.start();
-  };
-
-  const sendToBackend = async (command) => {
-    try {
-      const res = await fetch("http://localhost:8080/ai/process-command", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ voiceCommand: command }),
-      });
-
-      const result = await res.json();
-      if (result.status === "success") {
-        setMessage(`Success: ${result.aiInstruction}`);
-        fetchPayments();
-      } else if (result.status === "ambiguous") {
-        setMessage("AI found the command ambiguous. Please repeat clearly.");
-      } else {
-        setMessage(`Error: ${result.error || result.message}`);
-      }
-    } catch (err) {
-      console.error(err);
-      setMessage("Failed to process command");
-    }
   };
 
   // ✅ Format Number
@@ -295,55 +243,6 @@ export default function PaymentsPage() {
           </Button>
         </Stack>
       </Box>
-
-      {/* 🎤 Voice Command Guide */}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          🎙️ Voice Command Guide
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          You can say commands like:
-        </Typography>
-        <ul style={{ paddingLeft: "20px", fontSize: "0.875rem" }}>
-          <li>
-            Add payment for John Doe on Home loan with amount 5000, method
-            Online, status Completed, date 2024-10-01, notes Monthly payment
-          </li>
-          <li>
-            Update payment for John Doe on Home loan paymentAmount to 6000
-          </li>
-          <li>Delete payment for John Doe on Home loan</li>
-          <li>
-            Delete payment for John Doe on Home loan where status is Pending
-          </li>
-        </ul>
-        <Typography variant="caption" color="textSecondary">
-          📅 Use date format: YYYY-MM-DD or MM/DD/YYYY.
-        </Typography>
-      </Box>
-
-      {/* 🎤 Voice Command Section */}
-      <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 2 }}>
-        <Button
-          variant="contained"
-          color={listening ? "error" : "primary"}
-          onClick={handleVoiceCommand}
-        >
-          {listening ? "Listening..." : "Start Voice Command"}
-        </Button>
-        {voiceCommand && (
-          <Typography variant="body2">
-            <strong>Heard:</strong> {voiceCommand}
-          </Typography>
-        )}
-      </Box>
-
-      {/* Feedback Message */}
-      {message && (
-        <Box sx={{ mb: 2, p: 1, bgcolor: "warning.light", borderRadius: 1 }}>
-          <Typography variant="body2">{message}</Typography>
-        </Box>
-      )}
 
       <Box sx={{ width: "100%", overflow: "auto" }}>
         <Box sx={{ minWidth: "auto", minHeight: "400px" }}>

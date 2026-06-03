@@ -54,7 +54,7 @@ export const uploadDocument = async (req, res) => {
     await client.save();
 
     // Auto-update documentStatus based on count
-    const totalRequired = 10; // Adjust if different
+    const totalRequired = 4; // Adjust if different (Harmonized to 4 required KYC types)
     if (client.documents.length >= totalRequired) {
       client.documentStatus = "Approved";
       await client.save();
@@ -132,7 +132,7 @@ export const deleteDocument = async (req, res) => {
     const updatedClient = await Client.findById(doc.clientId).populate(
       "documents"
     );
-    const totalRequired = 10; // Adjust if different
+    const totalRequired = 4; // Adjust if different (Harmonized to 4 required KYC types)
     if (updatedClient.documents.length < totalRequired) {
       updatedClient.documentStatus = "Pending";
       await updatedClient.save();

@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import loan from "../../assets/loan.jpg";
-import analysis from "../../assets/aboutAs.jpg"
-import payment from "../../assets/payment.jpg"
-import reminder from "../../assets/reminder.jpg"
+import analysis from "../../assets/aboutAs.jpg";
+import payment from "../../assets/payment.jpg";
+import reminder from "../../assets/reminder.jpg";
 
 const steps = [
   {
@@ -21,7 +21,7 @@ const steps = [
     title: "Smart Reminders Sent",
     description:
       "Clients get automated reminders via WhatsApp, SMS, calls, and email.",
-    image:reminder,
+    image: reminder,
   },
   {
     title: "View Analytics & Insights",

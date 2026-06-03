@@ -1,6 +1,69 @@
+import { useState } from "react";
 import { Users, Mail, MapPin, Phone } from "lucide-react";
 
 export default function Contact() {
+  // State for form fields
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  // State for form submission status
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.message) {
+      setSubmitMessage("Please fill in all fields.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Send POST request to backend API
+      const response = await fetch("http://localhost:8080/api/send-email", {
+        // Updated to match your server port
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitMessage("Message sent successfully!");
+        setFormData({ name: "", email: "", message: "" }); // Reset form
+      } else {
+        setSubmitMessage(
+          result.error || "Failed to send message. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setSubmitMessage("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <>
       {/* ✅ Contact Section */}
@@ -22,33 +85,56 @@ export default function Contact() {
             </div>
             <div className="flex flex-col items-center">
               <Mail className="text-red-600" size={36} />
-              <p className="mt-3">support@loanai.com</p>
+              <p className="mt-3">keshva2004@gmail.com</p>
             </div>
           </div>
 
           {/* Contact Form */}
-          <form className="mt-12 max-w-xl mx-auto space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            className="mt-12 max-w-xl mx-auto space-y-4"
+          >
             <input
               type="text"
+              name="name"
               placeholder="Your Name"
+              value={formData.name}
+              onChange={handleChange}
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              required
             />
             <input
               type="email"
+              name="email"
               placeholder="Your Email"
+              value={formData.email}
+              onChange={handleChange}
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              required
             />
             <textarea
               rows="4"
+              name="message"
               placeholder="Your Message"
+              value={formData.message}
+              onChange={handleChange}
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              required
             ></textarea>
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all"
+              disabled={isSubmitting}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50"
             >
-              Send Message
+              {isSubmitting ? "Sending..." : "Send Message"}
             </button>
+            {submitMessage && (
+              <p
+                className={`mt-4 ${submitMessage.includes("successfully") ? "text-green-600" : "text-red-600"}`}
+              >
+                {submitMessage}
+              </p>
+            )}
           </form>
         </div>
       </section>

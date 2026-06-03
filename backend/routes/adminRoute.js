@@ -27,9 +27,22 @@ router.post("/login", loginAdmin);
 // Forgot password (public, but requires email) - NOTE: Insecure; add email verification in production
 router.post("/forgot-password", forgotPassword);
 
+// ✅ New: Verify authentication route (checks session validity)
+router.get("/verify", isAuthenticated, (req, res) => {
+  res.json({ success: true, message: "Authenticated", user: req.user });
+});
+
 // Profile routes (for logged-in admin)
 router.get("/profile", isAuthenticated, getAdminProfile);
 router.put("/profile", isAuthenticated, updateAdminProfile);
+
+// Logout route (new)
+router.post("/logout", isAuthenticated, (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+    res.json({ success: true, message: "Logged out successfully" });
+  });
+});
 
 // CRUD routes (require authentication only; no role checks)
 router.get("/", isAuthenticated, getAllAdmins); // List all admins

@@ -47,7 +47,6 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-// Existing get admin profile
 export const getAdminProfile = (req, res) => {
   res.json({
     success: true,
@@ -56,7 +55,6 @@ export const getAdminProfile = (req, res) => {
       username: req.user.username,
       email: req.user.email,
       contactNumber: req.user.contactNumber,
-      // Removed 'role' from response
     },
   });
 };

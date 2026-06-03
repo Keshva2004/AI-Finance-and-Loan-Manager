@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 export default function Menu() {
   const menus = [
     { path: "/", name: "Home" },
-    { path: "/featues", name: "Features" },
+    { path: "/features", name: "Features" },
     { path: "/work", name: "How it works" },
     { path: "/aboutUs", name: "About Us" },
     { path: "/contact", name: "Contact" },

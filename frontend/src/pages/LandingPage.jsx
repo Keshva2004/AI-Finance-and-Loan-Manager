@@ -15,7 +15,7 @@ export default function LandingPage() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/featues" element={<Features />} />
+        <Route path="/features" element={<Features />} />
         <Route path="/work" element={<Work />} />
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />

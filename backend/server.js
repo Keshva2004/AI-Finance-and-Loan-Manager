@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import passport from "passport";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
@@ -12,17 +13,20 @@ import clientRoutes from "./routes/clientRoute.js";
 import documentRoutes from "./routes/documentRoute.js";
 import loanRoutes from "./routes/loanRoute.js"; // ✅ Added loan routes
 import paymentRoutes from "./routes/paymentRoute.js";
-import aiRoutes from "./routes/aiRoute.js";
 import dashboardRoute from "./routes/dashboardRoute.js";
-
+import contactRoutes from "./routes/contactRoute.js"; // ✅ Added contact routes
 
 dotenv.config();
 
-// ✅ Enhanced env checks
+// ✅ Enhanced env checks (added email vars)
 const requiredEnvVars = [
   "CLOUDINARY_CLOUD_NAME",
   "CLOUDINARY_API_KEY",
   "CLOUDINARY_API_SECRET",
+  "EMAIL_USER", // ✅ Added
+  "EMAIL_PASS", // ✅ Added
+  "SMTP_HOST", // ✅ Added
+  "SMTP_PORT", // ✅ Added
 ];
 const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 if (missingVars.length > 0) {
@@ -50,7 +54,7 @@ connectDB()
 // ✅ CORS must be BEFORE routes
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -60,18 +64,28 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ Updated: Enhanced session config for production and local dev
+const isProduction = process.env.NODE_ENV === "production";
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "mysecretkey",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: {
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/financeDB",
+      collectionName: "sessions",
+    }),
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-
 
 // ... existing code ...
 
@@ -82,12 +96,10 @@ app.use("/documents", documentRoutes);
 app.use("/loans", loanRoutes);
 app.use("/dashboard", dashboardRoute);
 
-
 // ... existing code ...
 
 app.use("/payments", paymentRoutes);
-app.use("/ai", aiRoutes);
-
+app.use("/api", contactRoutes); // ✅ Added contact routes under /api
 
 // ✅ Default route
 app.get("/", (req, res) => {
