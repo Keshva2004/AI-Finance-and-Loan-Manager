@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 # AI-Finance-and-Loan-Manager
+=======
+# AI-Finance-and-Loan-Manager
+AI-powered Finance &amp; Loan Manager — a full-stack platform for microfinance institutions featuring Google Gemini credit underwriting, automated EMI calculations, Cloudinary KYC vaults, real-time payment tracking, and SMTP billing. Built with React, Node.js, MongoDB, and MU
+>>>>>>> 7e8ac8de731e353e569a02f7f413bcee1dbb0f5a
