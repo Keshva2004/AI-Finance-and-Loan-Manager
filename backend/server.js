@@ -18,6 +18,10 @@ import contactRoutes from "./routes/contactRoute.js"; // ✅ Added contact route
 
 dotenv.config();
 
+const cors = require("cors");
+
+
+
 // ✅ Enhanced env checks (added email vars)
 const requiredEnvVars = [
   "CLOUDINARY_CLOUD_NAME",

@@ -6,7 +6,7 @@ import Contact from "../Components/HeroSection/Contact";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Footer from "../Components/Navbar/Footer";
 import LoginPage from "../Components/Navbar/LoginPage";
-import Home from "../Components/HeroSection/home";
+import Home from "../Components/HeroSection/Home";
 import { useEffect } from "react";
 
 export default function LandingPage() {
