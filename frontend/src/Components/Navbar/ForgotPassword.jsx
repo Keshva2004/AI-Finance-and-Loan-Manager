@@ -64,6 +64,7 @@ export default function ForgotPassword({ onBack }) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
             className="w-full mt-1 px-4 py-2 border rounded-lg 
                        focus:border-blue-500 focus:ring-2 
                        focus:ring-blue-500 focus:outline-none"
@@ -80,6 +81,7 @@ export default function ForgotPassword({ onBack }) {
             required
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            autoComplete="new-password"
             className="w-full mt-1 px-4 py-2 border rounded-lg 
                        focus:border-blue-500 focus:ring-2 
                        focus:ring-blue-500 focus:outline-none"
@@ -96,6 +98,7 @@ export default function ForgotPassword({ onBack }) {
             required
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
             className="w-full mt-1 px-4 py-2 border rounded-lg 
                        focus:border-blue-500 focus:ring-2 
                        focus:ring-blue-500 focus:outline-none"

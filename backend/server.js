@@ -59,7 +59,11 @@ app.use(
       // Allow requests with no origin (mobile apps, curl, postman)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        origin.endsWith(".render.com")
+      ) {
         return callback(null, true);
       } else {
         return callback(new Error(`CORS blocked: ${origin}`));
