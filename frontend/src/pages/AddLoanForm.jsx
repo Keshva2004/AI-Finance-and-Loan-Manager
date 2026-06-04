@@ -72,7 +72,9 @@ export default function AddLoanForm({
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8080/clients");
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/clients`,
+        );
         setClients(data || []);
       } catch (err) {
         console.error("❌ Fetch Clients Error:", err);
@@ -95,15 +97,15 @@ export default function AddLoanForm({
       if (isEdit) {
         // Edit mode: PUT request to update
         const response = await axios.put(
-          `http://localhost:8080/loans/${loan._id}`,
-          formData
+          `${import.meta.env.VITE_BACKEND_URL}/loans/${loan._id}`,
+          formData,
         );
         console.log("✅ Loan updated:", response.data);
         onLoanUpdated(); // Refresh table
       } else {
         // Add mode: POST request to create
         const response = await axios.post(
-          "http://localhost:8080/loans",
+          `${import.meta.env.VITE_BACKEND_URL}/loans`,
           formData
         );
         console.log("✅ Loan added:", response.data);

@@ -27,7 +27,7 @@ export default function ForgotPassword({ onBack }) {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/forgot-password`,
+        `${import.meta.env.VITE_BACKEND_URL}/admin/forgot-password`,
         {
           method: "POST",
           headers: {
@@ -35,7 +35,7 @@ export default function ForgotPassword({ onBack }) {
           },
           body: JSON.stringify({ email, newPassword }),
           credentials: "include", // If needed for sessions
-        }
+        },
       );
       const data = await response.json();
       showFlash(data.message, data.success ? "success" : "error");

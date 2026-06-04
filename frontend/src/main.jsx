@@ -5,21 +5,27 @@ import axios from "axios";
 import App from "./App";
 import "./index.css";
 
-// 🌍 Globally intercept Axios and Fetch requests to dynamically point to the hosted backend
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Intercept Axios requests
 axios.interceptors.request.use(
   (config) => {
+    // Replace localhost with env URL
     if (config.url && config.url.startsWith("http://localhost:8080")) {
       config.url = config.url.replace("http://localhost:8080", API_BASE_URL);
-    } else if (config.url && !config.url.startsWith("http") && !config.url.startsWith("//")) {
+    }
+    // Handle relative URLs (e.g. "/api/clients")
+    else if (
+      config.url &&
+      !config.url.startsWith("http") &&
+      !config.url.startsWith("//")
+    ) {
       config.url = `${API_BASE_URL}${config.url.startsWith("/") ? "" : "/"}${config.url}`;
     }
-    config.withCredentials = true; // Auto-include session cookies
+    config.withCredentials = true; // Always send session cookies
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Intercept native fetch requests
@@ -36,7 +42,7 @@ window.fetch = function (url, options) {
 
   const finalOptions = {
     ...options,
-    credentials: options?.credentials || "include", // Ensure session cookies are sent cross-site
+    credentials: options?.credentials || "include",
   };
 
   return originalFetch(finalUrl, finalOptions);
@@ -47,5 +53,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

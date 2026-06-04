@@ -11,7 +11,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 
-const API_BASE_URL = "http://localhost:8080";
+
 
 export default function AdminProfile() {
   const [profile, setProfile] = useState({
@@ -28,7 +28,7 @@ export default function AdminProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/profile`, {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/profile`, {
           withCredentials: true,
         });
         if (response.data.success) {
@@ -58,7 +58,7 @@ export default function AdminProfile() {
     setUpdating(true);
     try {
       const response = await axios.put(
-        `${API_BASE_URL}/admin/profile`,
+        `${import.meta.env.VITE_BACKEND_URL}/admin/profile`,
         profile,
         { withCredentials: true }
       );
@@ -81,7 +81,7 @@ export default function AdminProfile() {
   const handleLogout = async () => {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/admin/logout`,
+        `${import.meta.env.VITE_BACKEND_URL}/admin/logout`,
         {},
         { withCredentials: true }
       );

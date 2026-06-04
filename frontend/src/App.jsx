@@ -24,9 +24,12 @@ const ProtectedRoute = ({ children }) => {
     const verifyAuth = async () => {
       try {
         // Call backend /admin/verify to check session
-        const response = await axios.get("http://localhost:8080/admin/verify", {
-          withCredentials: true, // Ensures cookies/sessions are sent
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/admin/verify`,
+          {
+            withCredentials: true, // Ensures cookies/sessions are sent
+          },
+        );
         if (response.data.success) {
           setIsAuthenticated(true);
         } else {

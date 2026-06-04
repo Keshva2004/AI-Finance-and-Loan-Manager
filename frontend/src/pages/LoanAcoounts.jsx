@@ -51,7 +51,11 @@ export default function LoanAccount() {
     setUnderwriteData(null);
 
     try {
-      const response = await axios.post(`http://localhost:8080/loans/${loan._id}/underwrite`, {}, { withCredentials: true });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/loans/${loan._id}/underwrite`,
+        {},
+        { withCredentials: true },
+      );
       if (response.data.success) {
         setUnderwriteData(response.data);
       } else {
@@ -82,7 +86,7 @@ export default function LoanAccount() {
         statusToSet = "Pending"; // Leave as Pending for manual review
       }
 
-      await axios.put(`http://localhost:8080/loans/${selectedLoan._id}`, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/loans/${selectedLoan._id}`, {
         status: statusToSet
       });
 
@@ -102,7 +106,7 @@ export default function LoanAccount() {
   const fetchLoans = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("http://localhost:8080/loans");
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/loans`);
       const loans = (Array.isArray(data) ? data : data.loans).filter(
         (loan) => loan && loan._id
       );
@@ -121,7 +125,7 @@ export default function LoanAccount() {
   // ✅ Delete Loan (unchanged)
   const deleteLoan = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/loans/${id}`);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/loans/${id}`);
       await fetchLoans();
     } catch (err) {
       console.error("❌ Delete Error:", err);
@@ -208,7 +212,7 @@ export default function LoanAccount() {
       console.log("📤 Sending parsed value to backend:", parsedValue); // Confirm parsing
 
       // Send update to backend
-      const response = await axios.put(`http://localhost:8080/loans/${id}`, {
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/loans/${id}`, {
         [field]: parsedValue,
         updatedAt: currentTime,
       });
@@ -278,7 +282,7 @@ export default function LoanAccount() {
     setReminderAlert(null);
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/loans/send-reminders"
+        `${import.meta.env.VITE_BACKEND_URL}/loans/send-reminders`,
       );
       setReminderAlert({ type: "success", message: data.message });
     } catch (err) {

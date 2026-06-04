@@ -37,7 +37,7 @@ export default function Clients() {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        "http://localhost:8080/clients?sort=clientId"
+        `${import.meta.env.VITE_BACKEND_URL}/clients?sort=clientId`,
       );
       const clients = (Array.isArray(data) ? data : data.clients).filter(
         (client) => client && (client._id || client.clientId)
@@ -70,7 +70,7 @@ export default function Clients() {
     for (const client of updatedClients) {
       try {
         await axios.put(
-          `http://localhost:8080/clients/${client._id || client.clientId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/clients/${client._id || client.clientId}`,
           client
         );
       } catch (err) {
@@ -83,8 +83,8 @@ export default function Clients() {
   // ✅ Delete Client
   const deleteClient = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/clients/${id}`);
-      const { data } = await axios.get("http://localhost:8080/clients");
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/clients/${id}`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clients`);
       const clients = (Array.isArray(data) ? data : data.clients).filter(
         (client) => client && (client._id || client.clientId)
       );
@@ -118,7 +118,7 @@ export default function Clients() {
         [field]: value,
         updatedAt: currentTime,
       };
-      await axios.put(`http://localhost:8080/clients/${id}`, finalClient);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/clients/${id}`, finalClient);
       console.log(`✅ Updated ${field} of client ${id}`);
     } catch (err) {
       console.error("❌ Update Error:", err);

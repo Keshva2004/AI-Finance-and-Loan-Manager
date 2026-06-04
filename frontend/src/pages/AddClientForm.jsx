@@ -99,15 +99,15 @@ const AddClientForm = ({
       if (isEdit) {
         // Edit mode: PUT request to update
         const response = await axios.put(
-          `http://localhost:8080/clients/${client._id || client.clientId}`,
-          payload
+          `${import.meta.env.VITE_BACKEND_URL}/clients/${client._id || client.clientId}`,
+          payload,
         );
         console.log("✅ Client updated:", response.data);
         onClientUpdated(); // Refresh table
       } else {
         // Add mode: POST request to create
         const response = await axios.post(
-          "http://localhost:8080/clients",
+          `${import.meta.env.VITE_BACKEND_URL}/clients`,
           payload
         );
         console.log("✅ Client added:", response.data);

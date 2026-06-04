@@ -38,10 +38,10 @@ export default function AddPaymentForm({
   useEffect(() => {
     if (open) {
       axios
-        .get("http://localhost:8080/clients")
+        .get(`${import.meta.env.VITE_BACKEND_URL}/clients`)
         .then((res) => setClients(res.data || []));
       axios
-        .get("http://localhost:8080/loans")
+        .get(`${import.meta.env.VITE_BACKEND_URL}/loans`)
         .then((res) => setLoans(res.data || []));
       setFormData({
         borrowerId: "",
@@ -98,7 +98,7 @@ export default function AddPaymentForm({
       if (isEdit) {
         // Edit mode: PUT request to update
         const response = await axios.put(
-          `http://localhost:8080/payments/${payment._id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/payments/${payment._id}`,
           formData
         );
         console.log("✅ Payment updated:", response.data);
@@ -106,7 +106,7 @@ export default function AddPaymentForm({
       } else {
         // Add mode: POST request to create
         const response = await axios.post(
-          "http://localhost:8080/payments",
+          `${import.meta.env.VITE_BACKEND_URL}/payments`,
           formData
         );
         console.log("✅ Payment added:", response.data);

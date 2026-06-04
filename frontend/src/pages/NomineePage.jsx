@@ -29,10 +29,10 @@ export default function NomineeDetails() {
       setError("");
       setLoading(true);
       const { data } = await axios.get(
-        "http://localhost:8080/documents/nominees",
+        `${import.meta.env.VITE_BACKEND_URL}/documents/nominees`,
         {
           withCredentials: true,
-        }
+        },
       );
       setNomineeDetails(data);
     } catch (error) {

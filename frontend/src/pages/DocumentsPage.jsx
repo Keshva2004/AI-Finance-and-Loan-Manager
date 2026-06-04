@@ -65,9 +65,12 @@ export default function DocumentsPage() {
     try {
       setError("");
       setLoadingDocs(true);
-      const { data } = await axios.get("http://localhost:8080/documents", {
-        withCredentials: true,
-      });
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/documents`,
+        {
+          withCredentials: true,
+        },
+      );
       setDocs(data);
       setFilteredDocs(data);
     } catch (error) {
@@ -84,7 +87,7 @@ export default function DocumentsPage() {
       setError("");
       setLoadingClients(true);
       const { data } = await axios.get(
-        "http://localhost:8080/documents/clients/all",
+        `${import.meta.env.VITE_BACKEND_URL}/documents/clients/all`,
         { withCredentials: true }
       );
       setClients(data);
@@ -129,7 +132,7 @@ export default function DocumentsPage() {
     formData.append("docType", docType);
 
     try {
-      await axios.post("http://localhost:8080/documents", formData, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/documents`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
@@ -151,7 +154,7 @@ export default function DocumentsPage() {
       return;
     try {
       setError("");
-      await axios.delete(`http://localhost:8080/documents/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/documents/${id}`, {
         withCredentials: true,
       });
       fetchDocs();
@@ -167,7 +170,7 @@ export default function DocumentsPage() {
     try {
       setError("");
       await axios.put(
-        `http://localhost:8080/documents/${editDialog.id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/documents/${editDialog.id}`,
         {
           docType: editDialog.newType,
         },

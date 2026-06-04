@@ -34,7 +34,7 @@ export default function PaymentsPage() {
   const fetchPayments = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("http://localhost:8080/payments");
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/payments`);
       setRows(data || []);
     } catch (err) {
       console.error("❌ Fetch Error:", err);
@@ -50,7 +50,7 @@ export default function PaymentsPage() {
   // ✅ Delete Payment
   const deletePayment = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/payments/${id}`);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/payments/${id}`);
       await fetchPayments();
     } catch (err) {
       console.error("❌ Delete Error:", err);
@@ -85,7 +85,7 @@ export default function PaymentsPage() {
         parsedValue = date.toISOString();
       }
 
-      const response = await axios.put(`http://localhost:8080/payments/${id}`, {
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/payments/${id}`, {
         [field]: parsedValue,
       });
 

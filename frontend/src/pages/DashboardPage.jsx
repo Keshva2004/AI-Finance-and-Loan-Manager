@@ -52,7 +52,7 @@ export default function Dashboard() {
     async function fetchSummary() {
       try {
         const { data } = await axios.get(
-          "http://localhost:8080/dashboard/summary"
+          `${import.meta.env.VITE_BACKEND_URL}/dashboard/summary`,
         );
         setSummary(data);
       } catch (error) {

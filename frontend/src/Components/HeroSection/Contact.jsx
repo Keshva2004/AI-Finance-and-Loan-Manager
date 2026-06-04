@@ -37,14 +37,17 @@ export default function Contact() {
 
     try {
       // Send POST request to backend API
-      const response = await fetch("http://localhost:8080/api/send-email", {
-        // Updated to match your server port
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/send-email`,
+        {
+          // Updated to match your server port
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
+      );
 
       const result = await response.json();
 
@@ -53,7 +56,7 @@ export default function Contact() {
         setFormData({ name: "", email: "", message: "" }); // Reset form
       } else {
         setSubmitMessage(
-          result.error || "Failed to send message. Please try again."
+          result.error || "Failed to send message. Please try again.",
         );
       }
     } catch (error) {

@@ -13,14 +13,17 @@ export default function StylishLogin() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const response = await fetch(`http://localhost:8080/admin/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/admin/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: "include",
       },
-      body: JSON.stringify({ username, password }),
-      credentials: "include",
-    });
+    );
     const data = await response.json();
     console.log(data);
     const { success, message, user } = data;
